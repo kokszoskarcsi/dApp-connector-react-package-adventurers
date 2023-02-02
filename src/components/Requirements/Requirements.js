@@ -51,7 +51,6 @@ export const ErgoDappConnector = ({ color }) => {
         if (access_granted) {
           setWalletConnected(true);
           window.ergoConnector.nautilus.getContext().then((context) => {
-
             setErgoWallet(context);
           });
         } else {
@@ -90,6 +89,7 @@ export const ErgoDappConnector = ({ color }) => {
       // get ERG balance
       ergoWallet.get_balance().then(function (balance) {
         setErgBalance(balance / NANOERG_TO_ERG);
+        localStorage.setItem("ergBalance", "testvalue2");
       });
       // get SigUSD balance
       ergoWallet.get_balance(TOKENID_SIGUSD).then(function (balance) {
