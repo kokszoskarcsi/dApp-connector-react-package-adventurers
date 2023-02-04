@@ -1,4 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, child, get } from "firebase/database";
 import React from "react";
 import { Menu, Transition } from "@headlessui/react";
 import wallet_black from "../../assets/ergo-wallet-black.png";
@@ -7,32 +9,29 @@ import WalletHover from "../WalletHover/WalletHover";
 import "../../styles.css";
 import NautilusLogo from "../../assets/NautilusLogo.png";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBUy8XaFy-Tk7GCGYNNJfTYWiJHw1qObgM",
+  authDomain: "webappadventurers.firebaseapp.com",
+  databaseURL:
+    "https://webappadventurers-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "webappadventurers",
+  storageBucket: "webappadventurers.appspot.com",
+  messagingSenderId: "238521952340",
+  appId: "1:238521952340:web:701cd59ba9503a939265c1",
+  measurementId: "G-LSG5J6H7Y7",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const dbRef = ref(getDatabase(app));
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const NANOERG_TO_ERG = 1000000000;
-const TOKENID_SIGRSV =
-  "003bd19d0187117f130b62e1bcab0939929ff5c7709f843c5c4dd158949285d0";
-const TOKENID_SIGUSD =
-  "03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04";
-const TOKENID_NETA =
-  "472c3d4ecaa08fb7392ff041ee2e6af75f4a558810a74b28600549d5392810e8";
-const TOKENID_ERGOPAD =
-  "d71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413";
-const TOKENID_PAIDEIA =
-  "1fd6e032e8476c4aa54c18c1a308dce83940e8f4a28f576440513ed7326ad489";
-
 export const ErgoDappConnector = ({ color }) => {
   const [open, setOpen] = useState(true);
   const [ergoWallet, setErgoWallet] = useState();
-
-  const [ergBalance, setErgBalance] = useState(0);
-  const [sigUSDBalance, setSigUSDBalance] = useState(0);
-  const [sigRSVBalance, setSigRSVBalance] = useState(0);
-  const [ergopadBalance, setErgopadBalance] = useState(0);
-  const [netaBalance, setNetaBalance] = useState(0);
-  const [paideiaBalance, setPaideiaBalance] = useState(0);
 
   const [walletConnected, setWalletConnected] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
@@ -86,41 +85,12 @@ export const ErgoDappConnector = ({ color }) => {
 
   useEffect(() => {
     if (typeof ergoWallet !== "undefined") {
-      // get ERG balance
-      ergoWallet.get_balance().then(function (balance) {
-        setErgBalance(balance / NANOERG_TO_ERG);
-        localStorage.setItem("ergBalance", "testvalue2");
-      });
-      // get SigUSD balance
-      ergoWallet.get_balance(TOKENID_SIGUSD).then(function (balance) {
-        setSigUSDBalance(balance / 100);
-      });
-
-      // get SigRSV balance
-      ergoWallet.get_balance(TOKENID_SIGRSV).then(function (balance) {
-        setSigRSVBalance(balance);
-      });
-
-      // get Ergopad balance
-      ergoWallet.get_balance(TOKENID_ERGOPAD).then(function (balance) {
-        setErgopadBalance(balance / 100);
-      });
-
-      // get Neta balance
-      ergoWallet.get_balance(TOKENID_NETA).then(function (balance) {
-        setNetaBalance(balance / 1000000);
-      });
-
-      // get Paideia balance
-      ergoWallet.get_balance(TOKENID_PAIDEIA).then(function (balance) {
-        setPaideiaBalance(balance / 10000);
-      });
-
-      //get Address
+      //get Address and evaluate all NFT-s the user has
       ergoWallet.get_change_address().then(function (address) {
         localStorage.setItem("walletAddress", address);
         setDefaultAddress(truncate(address, 14, "..."));
         localStorage.setItem("walletConnected", "true");
+        getUserNFTs();
       });
     }
   }, [ergoWallet]);
@@ -148,6 +118,30 @@ export const ErgoDappConnector = ({ color }) => {
     darkorange: ["#ff8c00", "white"],
   };
 
+  const getUserNFTs = () => {
+    //Get all NFT ids from database and push them to localstorage
+    get(child(dbRef, `adventurerNFTs`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const allNFTs = snapshot.val();
+          let mid = [];
+          for (let key in allNFTs) {
+            ergoWallet.get_balance(key).then((balance) => {
+              if (parseInt(balance) === 1) {
+                mid.push(key);
+                localStorage.setItem("userNFTs", JSON.stringify(mid));
+              }
+            });
+          }
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const truncate = (str, len, sep) => {
     if (str.length < len) {
       return str;
@@ -169,6 +163,7 @@ export const ErgoDappConnector = ({ color }) => {
         setDefaultAddress("");
         localStorage.removeItem("walletAddress");
         localStorage.removeItem("walletConnected");
+        localStorage.removeItem("userNFTs");
         window.ergoConnector.nautilus.disconnect();
       }
     }
@@ -315,15 +310,7 @@ export const ErgoDappConnector = ({ color }) => {
             </span>
           </div>
           {walletHover && walletConnected && (
-            <WalletHover
-              disconnect={disconnectWallet}
-              sigUSDBalance={sigUSDBalance}
-              ergBalance={ergBalance}
-              sigRSVBalance={sigRSVBalance}
-              netaBalance={netaBalance}
-              ergopadBalance={ergopadBalance}
-              paideiaBalance={paideiaBalance}
-            />
+            <WalletHover disconnect={disconnectWallet} />
           )}
         </div>
       </div>

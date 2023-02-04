@@ -14,16 +14,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function WalletHover({
-  disconnect,
-  sigUSDBalance,
-  ergBalance,
-  sigRSVBalance,
-  ergopadBalance,
-  netaBalance,
-  paideiaBalance,
-}) {
-
+export default function WalletHover({ disconnect }) {
   function handleClearWallet() {
     disconnect();
   }
@@ -39,9 +30,7 @@ export default function WalletHover({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items
-          className="mainMenuItem"
-        >
+        <Menu.Items className="mainMenuItem">
           <div
             style={{
               padding: "0.25rem 0 0.25rem",
@@ -49,108 +38,6 @@ export default function WalletHover({
               marginTop: "1px",
             }}
           >
-            {ergBalance != 0 && (
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? "item1" : "item2", "item3")}
-                  >
-                    <img src={ERGicon} className="token-icon-img" />
-                    <p>
-                      ERG Balance:
-                      <br />
-                      {ergBalance} ERG
-                    </p>
-                  </a>
-                )}
-              </Menu.Item>
-            )}
-            {sigUSDBalance != 0 && (
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? "item1" : "item2", "item3")}
-                  >
-                    <img src={SigUSDicon} className="token-icon-img" />
-                    <p>
-                      SigUSD Balance:
-                      <br />
-                      {sigUSDBalance} SigUSD
-                    </p>
-                  </a>
-                )}
-              </Menu.Item>
-            )}
-            {sigRSVBalance != 0 && (
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? "item1" : "item2", "item3")}
-                  >
-                    <img src={SigRSVicon} className="token-icon-img" />
-                    <p>
-                      SigRSV Balance:
-                      <br />
-                      {sigRSVBalance} SigRSV
-                    </p>
-                  </a>
-                )}
-              </Menu.Item>
-            )}
-            {ergopadBalance != 0 && (
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? "item1" : "item2", "item3")}
-                  >
-                    <img src={ergopadIcon} className="token-icon-img" />
-                    <p>
-                      ergopad Balance:
-                      <br />
-                      {ergopadBalance} ergopad
-                    </p>
-                  </a>
-                )}
-              </Menu.Item>
-            )}
-            {netaBalance != 0 && (
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? "item1" : "item2", "item3")}
-                  >
-                    <img src={netaIcon} className="token-icon-img" />
-                    <p>
-                      NETA Balance:
-                      <br />
-                      {netaBalance} NETA
-                    </p>
-                  </a>
-                )}
-              </Menu.Item>
-            )}
-            {paideiaBalance != 0 && (
-              <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(active ? "item1" : "item2", "item3")}
-                  >
-                    <img src={paideiaIcon} className="token-icon-img" />
-                    <p>
-                      Paideia Balance:
-                      <br />
-                      {paideiaBalance} Paideia
-                    </p>
-                  </a>
-                )}
-              </Menu.Item>
-            )}
             <Menu.Item>
               {({ active }) => (
                 <a
