@@ -1,7 +1,7 @@
 {
-  "name": "ergo-dapp-connector",
+  "name": "ergo-dapp-connector-adventurers",
   "version": "0.1.1",
-  "description": "React package with a built-in Ergo dApp Connector. Current supported wallet is Nautilus Wallet.",
+  "description": "React package with a built-in Ergo dApp Connector. Current supported wallet is Nautilus Wallet. Forked for the Adventurers project",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "scripts": {
@@ -12,9 +12,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nightowlcasino/dApp-connector-react-package.git"
+    "url": "git+https://github.com/kokszoskarcsi/dApp-connector-react-package-adventurers.git"
   },
-  "author": "Night Owl Casino",
+  "author": "Night Owl Casino, Kokszos Karoly",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/nightowlcasino/dApp-connector-react-package/issues"
@@ -49,6 +49,8 @@
   },
   "dependencies": {
     "firebase": "^9.17.1",
-    "postcss": "^8.4.21"
+    "npm": "^9.4.2",
+    "postcss": "^8.4.21",
+    "rollup-plugin-dotenv": "^0.4.1"
   }
 }

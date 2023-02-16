@@ -4,6 +4,7 @@ import external from "rollup-plugin-peer-deps-external";
 import postcss from "rollup-plugin-postcss";
 import images from "@rollup/plugin-image";
 import { terser } from "rollup-plugin-terser";
+import dotenv from "rollup-plugin-dotenv";
 
 export default [
   {
@@ -20,6 +21,7 @@ export default [
       },
     ],
     plugins: [
+      dotenv(),
       postcss({
         plugins: [],
         minimize: true,

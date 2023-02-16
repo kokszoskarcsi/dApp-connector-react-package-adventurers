@@ -1,6 +1,7 @@
-import { useState, useEffect, Fragment } from "react";
-import { initializeApp } from "firebase/app";
+import { useState, useEffect, Fragment, useRef } from "react";
 import { getDatabase, ref, child, get } from "firebase/database";
+import { initializeApp } from "firebase/app";
+import { deleteUser, getAuth, signInAnonymously } from "firebase/auth";
 import React from "react";
 import { Menu, Transition } from "@headlessui/react";
 import wallet_black from "../../assets/ergo-wallet-black.png";
@@ -9,27 +10,27 @@ import WalletHover from "../WalletHover/WalletHover";
 import "../../styles.css";
 import NautilusLogo from "../../assets/NautilusLogo.png";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBUy8XaFy-Tk7GCGYNNJfTYWiJHw1qObgM",
-  authDomain: "webappadventurers.firebaseapp.com",
-  databaseURL:
-    "https://webappadventurers-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "webappadventurers",
-  storageBucket: "webappadventurers.appspot.com",
-  messagingSenderId: "238521952340",
-  appId: "1:238521952340:web:701cd59ba9503a939265c1",
-  measurementId: "G-LSG5J6H7Y7",
-};
-
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = initializeApp({
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
+  databaseURL: process.env.REACT_APP_DATABASE_URL,
+});
 const dbRef = ref(getDatabase(app));
-
+const auth = getAuth(app);
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const GET_USER_NFT_INTERVAL_DELAY = 10000;
+
 export const ErgoDappConnector = ({ color }) => {
+  const [user, setUser] = useState(null);
   const [open, setOpen] = useState(true);
   const [ergoWallet, setErgoWallet] = useState();
 
@@ -37,6 +38,8 @@ export const ErgoDappConnector = ({ color }) => {
   const [showSelector, setShowSelector] = useState(false);
   const [walletHover, setWalletHover] = useState(false);
   const [defaultAddress, setDefaultAddress] = useState();
+
+  var userNFTInterval = useRef();
 
   window.addEventListener("ergo_wallet_disconnected", () => {
     disconnectWallet();
@@ -85,12 +88,28 @@ export const ErgoDappConnector = ({ color }) => {
 
   useEffect(() => {
     if (typeof ergoWallet !== "undefined") {
+      //sign in anonymously
+      if (user === null) {
+        signInAnonymously(auth)
+          .then((userCredential) => {
+            // Signed in
+            setUser(userCredential.user);
+            getUserNFTs();
+            userNFTInterval.current = setInterval(
+              () => getUserNFTs(),
+              GET_USER_NFT_INTERVAL_DELAY
+            );
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+          });
+      }
       //get Address and evaluate all NFT-s the user has
       ergoWallet.get_change_address().then(function (address) {
         localStorage.setItem("walletAddress", address);
         setDefaultAddress(truncate(address, 14, "..."));
         localStorage.setItem("walletConnected", "true");
-        getUserNFTs();
       });
     }
   }, [ergoWallet]);
@@ -164,6 +183,9 @@ export const ErgoDappConnector = ({ color }) => {
         localStorage.removeItem("walletAddress");
         localStorage.removeItem("walletConnected");
         localStorage.removeItem("userNFTs");
+        clearInterval(userNFTInterval.current);
+        deleteUser(auth.currentUser);
+        setUser(null);
         window.ergoConnector.nautilus.disconnect();
       }
     }
