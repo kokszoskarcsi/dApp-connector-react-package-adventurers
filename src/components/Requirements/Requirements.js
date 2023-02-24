@@ -29,7 +29,7 @@ function classNames(...classes) {
 
 const GET_USER_NFT_INTERVAL_DELAY = 10000;
 
-export const ErgoDappConnector = ({ color }) => {
+export const ErgoDappConnector = ({ color, setUserNFTs }) => {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(true);
   const [ergoWallet, setErgoWallet] = useState();
@@ -148,10 +148,11 @@ export const ErgoDappConnector = ({ color }) => {
             ergoWallet.get_balance(key).then((balance) => {
               if (parseInt(balance) === 1) {
                 mid.push(key);
-                localStorage.setItem("userNFTs", JSON.stringify(mid));
+                //localStorage.setItem("userNFTs", JSON.stringify(mid));
               }
             });
           }
+          setUserNFTs(mid);
         } else {
           console.log("No data available");
         }

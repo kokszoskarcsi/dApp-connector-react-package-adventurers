@@ -1,12 +1,10 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { storiesOf } from "@storybook/react";
-import {ErgoDappConnector} from "../components/Requirements";
+import { ErgoDappConnector } from "../components/Requirements";
 
 const stories = storiesOf("App test", module);
 
 stories.add("App test", () => {
-  return (
-
-  <ErgoDappConnector color={"orange"}/>);
-
+  const [userNFTs, setUserNFTs] = useState([]);
+  return <ErgoDappConnector color={"orange"} setUserNFTs={setUserNFTs} />;
 });
