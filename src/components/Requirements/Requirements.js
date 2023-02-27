@@ -18,7 +18,11 @@ function classNames(...classes) {
 
 const GET_USER_NFT_INTERVAL_DELAY = 10000;
 
-export const ErgoDappConnector = ({ color, setUserNFTs, databaseKey }) => {
+export const ErgoDappConnector = ({
+  buttonColor = "orange",
+  setUserNFTs,
+  databaseKey,
+}) => {
   const app = initializeApp(databaseKey);
   const dbRef = ref(getDatabase(app));
   const auth = getAuth(app);
@@ -268,16 +272,16 @@ export const ErgoDappConnector = ({ color, setUserNFTs, databaseKey }) => {
         <div
           id="header-wallet"
           style={{
-            backgroundColor: colorStylingArray[color][0],
-            color: colorStylingArray[color][1],
+            backgroundColor: colorStylingArray[buttonColor][0],
+            color: colorStylingArray[buttonColor][1],
             flexDirection: walletConnected ? "column" : "row",
-            border: color == "white" ? "1px solid black" : "",
+            border: buttonColor == "white" ? "1px solid black" : "",
           }}
         >
           {!walletConnected && (
             <img
               src={
-                colorStylingArray[color][1] == "white"
+                colorStylingArray[buttonColor][1] == "white"
                   ? wallet_white
                   : wallet_black
               }
@@ -308,7 +312,7 @@ export const ErgoDappConnector = ({ color, setUserNFTs, databaseKey }) => {
                     />
                     <p
                       style={{
-                        color: colorStylingArray[color][1],
+                        color: colorStylingArray[buttonColor][1],
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",

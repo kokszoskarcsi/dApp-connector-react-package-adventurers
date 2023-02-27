@@ -8,11 +8,5 @@ stories.add("App test", () => {
   const [userNFTs, setUserNFTs] = useState([]);
   //API KEY REQUIRED
 
-  return (
-    <ErgoDappConnector
-      color={"orange"}
-      setUserNFTs={setUserNFTs}
-      databaseKey={APIKey}
-    />
-  );
+  return <ErgoDappConnector setUserNFTs={setUserNFTs} databaseKey={APIKey} />;
 });
